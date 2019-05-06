@@ -51,13 +51,23 @@ module EOSIO
       JSON.parse resp.body
     end
 
+    def get_actions(account_name, pos, offset)
+      resp = @conn.post do |req|
+        req.url '/v1/history/get_actions'
+        req.headers['Content-Type'] = 'application/json'
+        req.body = {pos: pos, account_name: account_name, offset: offset}.to_json
+      end
+
+      JSON.parse resp.body
+    end
+
     # Transacts against the EOS blockchain. For reasons I hate,
     # this shells out to Node, so we have a dependency on a
     # Node.js runtime (8+). More in `bridge.js`.
     # Throws a TransactionError if the transaction fails
     def transact(txn)
       bridge = File.expand_path(File.join('..', '..', 'bridge.js'), File.dirname(__FILE__))
-      results = `node #{bridge} "#{@protocol}://#{@host}:#{@port}" #{@signatures.first} #{txn[:account]} #{txn[:action]} #{txn[:invoice_id]} #{txn[:amount]} 2>&1`
+      results = `node #{bridge} "#{@protocol}://#{@host}:#{@port}" #{@signatures.first} #{txn[:account]} #{txn[:action]} #{txn[:recipient]} #{txn[:amount]} #{txn[:memo]} 2>&1`
 
       throw TransactionError.new(results) unless $?.success?
       true

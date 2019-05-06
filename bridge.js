@@ -20,8 +20,9 @@ const URI = process.argv[2];
 const KEY = process.argv[3];
 const ACCOUNT = process.argv[4];
 const ACTION = process.argv[5];
-const INVOICE_ID = process.argv[6];
+const RECIPIENT = process.argv[6];
 const AMOUNT = process.argv[7];
+const MEMO = process.argv[8];
 
 const eosSignatureProvider = new JsSignatureProvider([KEY]);
 const eosRpc = new JsonRpc(URI, { fetch });
@@ -30,16 +31,17 @@ const eosApi = new Api({ rpc: eosRpc, signatureProvider: eosSignatureProvider, t
 (async () => {
   try {
     let result = await eosApi.transact({ actions: [{
-      account: ACCOUNT,
-      name: ACTION,
+      account: 'eosio.token',
+      name: 'transfer',
       authorization: [{
         actor: ACCOUNT,
         permission: "active",
       }],
       data: {
-        user: ACCOUNT,
-        invoice_id: INVOICE_ID,
-        amount: AMOUNT,
+        from: ACCOUNT,
+        to: RECIPIENT,
+        quantity: AMOUNT,
+        memo: MEMO,
       }
     }]}, { blocksBehind: 3, expireSeconds: 30 });
     console.log(result);
