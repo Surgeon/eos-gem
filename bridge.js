@@ -40,7 +40,7 @@ const eosApi = new Api({ rpc: eosRpc, signatureProvider: eosSignatureProvider, t
       data: {
         from: ACCOUNT,
         to: RECIPIENT,
-        quantity: AMOUNT,
+        quantity: AMOUNT + ' EOS',
         memo: MEMO,
       }
     }]}, { blocksBehind: 3, expireSeconds: 30 });
